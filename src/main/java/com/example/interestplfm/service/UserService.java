@@ -31,11 +31,11 @@ public interface UserService {
      *
      * @param username  用户名
      * @param password  密码
-     * @return boolean
+     * @return User
      * @author xhb
      * @since 2024/07/23
      */
-    boolean verifyPassword(String username, String password);
+    User verifyPassword(String username, String password);
 
     /**
      * 功能描述：注册：创建新用户

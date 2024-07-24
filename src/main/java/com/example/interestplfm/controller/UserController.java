@@ -1,19 +1,17 @@
 package com.example.interestplfm.controller;
 
-import com.example.interestplfm.entity.Picture;
+import com.example.interestplfm.annotation.TokenListener;
+import com.example.interestplfm.config.JwtUtils;
 import com.example.interestplfm.entity.User;
 import com.example.interestplfm.service.UserService;
 import com.example.interestplfm.tools.RestResult;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 用户相关接口
@@ -43,8 +41,10 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:8080")
     @PostMapping("/login")
     public RestResult<String> login(@RequestParam String username, @RequestParam String password) {
-        if (userService.verifyPassword(username, password)) {
-            return RestResult.build("Login successful");
+        User user = userService.verifyPassword(username, password);
+        if (user != null) {
+            String token = JwtUtils.generateToken(user.getUsername());
+            return RestResult.build(token);
         } else {
             Map<String, Object> extension = new HashMap<>();
             extension.put("error", "Invalid username or password");
@@ -54,8 +54,16 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:8080") // 允许 Vue.js 前端端口 8080 的跨域请求
     @GetMapping("/getById")
-    public User uploadPicture(@RequestParam("userId") Long userId) {
+    @TokenListener
+    public RestResult<User> uploadPicture(@RequestParam("userId") Long userId) {
 
-        return userService.selectByUserId(userId);
+        return RestResult.build(userService.selectByUserId(userId));
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        // 清空当前用户的Token
+        response.setHeader("Authorization", "");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }

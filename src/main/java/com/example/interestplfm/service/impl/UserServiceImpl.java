@@ -59,18 +59,22 @@ public class UserServiceImpl implements UserService {
      *
      * @param username 用户名
      * @param password 密码
-     * @return boolean
+     * @return User
      * @author xhb
      * @since 2024/07/23
      */
     @Override
-    public boolean verifyPassword(String username, String password) {
+    public User verifyPassword(String username, String password)  {
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            return false;
+            return null;
         }
         String hashedPassword = hashPassword(password, user.getSalt());
-        return hashedPassword.equals(user.getPasswordHash());
+        if (hashedPassword.equals(user.getPasswordHash())) {
+            return user;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -84,6 +88,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean registerUser(String username, String password) {
+        User existuser = userRepository.findByUsername(username);
+        if (existuser != null) {
+            return false;
+        }
         User user = new User();
         user.setUsername(username);
         // 设置盐值
