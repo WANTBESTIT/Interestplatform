@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8 以上使用
+    url: jdbc:mysql://127.0.0.1:3306/mydatabase?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai # mysql 8 以上必须添加 serverTimezone 时区设置
+    username: root
+    password: root
+
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.seven.entity
+  configuration:
+    map-underscore-to-camel-case: true # 数据库字段下划线对应对象属性的驼峰命名转换 开启
+    # 注意：以下配置通常不在 mybatis.configuration 下，而是可能在 Spring Boot 的日志配置中设置
+    # 如果 MyBatis-Spring-Boot-Starter 支持直接配置日志实现，则可能需要查阅相关文档
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 配置 MyBatis 日志到标准输出（通常不推荐生产环境使用）
+logging:
+  level:
+    org.springframework: DEBUG
+    org.mybatis: DEBUG
+    org.springframework.boot.autoconfigure: error
+    com.example.interestplfm.mapper: DEBUG
+server:
+  port: 8081
+weibo:
+  # 文件路径
+  profile: G:/working-idea/vue3/vue3/src/assets/images/
+
